@@ -1,7 +1,7 @@
 resource "aws_instance" "web" {
-  ami                         = "ami-03f4878755434977f" #change ami id for different region
+  ami                         = "ami-0dd3e09c2cc277cf9" # Ubuntu 22.04 LTS in ap-south-2
   instance_type               = "m7i-flex.large"
-  key_name                    = "loginKey" #change key name as per your setup
+  key_name                    = "taskkey" #change key name as per your setup
   vpc_security_group_ids      = [aws_security_group.Jenkins-VM-SG.id]
   associate_public_ip_address = true
   user_data                   = templatefile("./install.sh", {})
@@ -11,7 +11,7 @@ resource "aws_instance" "web" {
   }
 
   root_block_device {
-    volume_size = 40
+    volume_size = 80
   }
 }
 
