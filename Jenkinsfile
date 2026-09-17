@@ -11,7 +11,7 @@ pipeline {
 
         // Docker Hub
         DOCKER_USER = "hajeranishat11"
-        DOCKER_CRED_ID = "docker-hub"
+        DOCKER_CRED_ID = "dockerhub"
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
 
@@ -50,7 +50,7 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    withSonarQubeEnv(credentialsId: 'SonarQube-token') {
+                    withSonarQubeEnv(credentialsId: 'Sonar-Qube-Token') {
                         sh "mvn sonar:sonar -Dsonar.host.url=${SONAR_HOST_URL}"
                     }
                 }
@@ -62,7 +62,7 @@ pipeline {
                 script {
                     waitForQualityGate(
                         abortPipeline: false,
-                        credentialsId: 'SonarQube-token'
+                        credentialsId: 'Sonar-Qube-Token'
                     )
                 }
             }
