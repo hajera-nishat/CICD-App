@@ -288,7 +288,7 @@ pipeline {
 
                             sh """
                                 kubectl rollout restart \
-                                deployment.apps/registerapp-deployment
+                                deployment.apps/regapp-deployment
                             """
 
 
