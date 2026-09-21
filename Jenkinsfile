@@ -160,9 +160,8 @@ pipeline {
                 script {
                     dir("Kubernete") {
 
-                        kubeconfig(
-                            credentialsId: "kubernetes",
-                            serverUrl: ""
+                        withKubeConfig(
+                            credentialsId: "kubernetes"
                         ) {
 
                             sh "kubectl apply -f regapp-deploy.yml"
