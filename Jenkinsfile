@@ -27,11 +27,20 @@ pipeline {
 
     stages {
 
+        // ============================================================
+        // 1. CLEAN WORKSPACE
+        // ============================================================
+
         stage("Cleanup Workspace") {
             steps {
                 cleanWs()
             }
         }
+
+
+        // ============================================================
+        // 2. CHECKOUT CODE FROM GITHUB
+        // ============================================================
 
         stage("Checkout from SCM") {
             steps {
@@ -41,11 +50,21 @@ pipeline {
             }
         }
 
+
+        // ============================================================
+        // 3. BUILD & TEST
+        // ============================================================
+
         stage("Build & Test Application") {
             steps {
                 sh "mvn clean test package"
             }
         }
+
+
+        // ============================================================
+        // 4. SONARQUBE ANALYSIS
+        // ============================================================
 
         stage("SonarQube Analysis") {
             steps {
@@ -57,6 +76,11 @@ pipeline {
             }
         }
 
+
+        // ============================================================
+        // 5. QUALITY GATE
+        // ============================================================
+
         stage("Quality Gate") {
             steps {
                 script {
@@ -64,6 +88,11 @@ pipeline {
                 }
             }
         }
+
+
+        // ============================================================
+        // 6. ARTIFACTORY CONFIGURATION
+        // ============================================================
 
         stage("Artifactory Configuration") {
             steps {
@@ -90,6 +119,11 @@ pipeline {
             }
         }
 
+
+        // ============================================================
+        // 7. DEPLOY MAVEN ARTIFACT
+        // ============================================================
+
         stage("Deploy Artifacts") {
             steps {
                 rtMavenRun(
@@ -102,6 +136,11 @@ pipeline {
             }
         }
 
+
+        // ============================================================
+        // 8. PUBLISH BUILD INFO
+        // ============================================================
+
         stage("Publish Build Info") {
             steps {
                 rtPublishBuildInfo(
@@ -110,13 +149,20 @@ pipeline {
             }
         }
 
+
+        // ============================================================
+        // 9. BUILD & PUSH DOCKER IMAGE
+        // ============================================================
+
         stage("Build & Push Docker Image") {
             steps {
                 script {
+
                     docker.withRegistry(
                         "https://index.docker.io/v1/",
                         DOCKER_CRED_ID
                     ) {
+
                         def docker_image = docker.build(
                             "${IMAGE_NAME}:${IMAGE_TAG}"
                         )
@@ -128,9 +174,15 @@ pipeline {
             }
         }
 
+
+        // ============================================================
+        // 10. TRIVY SECURITY SCAN
+        // ============================================================
+
         stage("Trivy Scan") {
             steps {
                 script {
+
                     sh """
                         docker run --rm \
                         -v /var/run/docker.sock:/var/run/docker.sock \
@@ -146,30 +198,120 @@ pipeline {
             }
         }
 
+
+        // ============================================================
+        // 11. CLEANUP LOCAL DOCKER IMAGES
+        // ============================================================
+
         stage("Cleanup Docker Images") {
             steps {
                 script {
+
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
                     sh "docker rmi ${IMAGE_NAME}:latest || true"
                 }
             }
         }
 
+
+        // ============================================================
+        // 12. DEPLOY TO AMAZON EKS
+        // ============================================================
+
         stage("Deploy to Kubernetes") {
             steps {
                 script {
-                    dir("Kubernete") {
 
-                        withKubeConfig(
-                            credentialsId: "kubernetes"
-                        ) {
+                    /*
+                     * Jenkins uses the AWS credential "aws-eks".
+                     *
+                     * AWS credentials
+                     *       ↓
+                     * AWS CLI
+                     *       ↓
+                     * EKS kubeconfig
+                     *       ↓
+                     * kubectl
+                     *       ↓
+                     * cicd-eks
+                     */
 
-                            sh "kubectl apply -f regapp-deploy.yml"
-                            sh "kubectl apply -f regapp-service.yml"
+                    withAWS(
+                        credentials: "aws-eks",
+                        region: "ap-south-2"
+                    ) {
+
+                        sh """
+                            echo "======================================"
+                            echo "AWS IDENTITY"
+                            echo "======================================"
+
+                            aws sts get-caller-identity
+
+                            echo
+                            echo "======================================"
+                            echo "UPDATING EKS KUBECONFIG"
+                            echo "======================================"
+
+                            aws eks update-kubeconfig \
+                                --region ap-south-2 \
+                                --name cicd-eks
+
+                            echo
+                            echo "======================================"
+                            echo "KUBERNETES NODES"
+                            echo "======================================"
+
+                            kubectl get nodes
+                        """
+
+
+                        dir("Kubernete") {
+
+                            echo "Deploying Kubernetes Deployment..."
+
+                            sh """
+                                kubectl apply \
+                                -f regapp-deploy.yml
+                            """
+
+
+                            echo "Deploying Kubernetes Service..."
+
+                            sh """
+                                kubectl apply \
+                                -f regapp-service.yml
+                            """
+
+
+                            echo "Restarting application deployment..."
 
                             sh """
                                 kubectl rollout restart \
                                 deployment.apps/registerapp-deployment
+                            """
+
+
+                            echo "Checking deployment..."
+
+                            sh """
+                                kubectl rollout status \
+                                deployment.apps/registerapp-deployment \
+                                --timeout=180s
+                            """
+
+
+                            echo "Checking pods..."
+
+                            sh """
+                                kubectl get pods -o wide
+                            """
+
+
+                            echo "Checking services..."
+
+                            sh """
+                                kubectl get services
                             """
                         }
                     }
@@ -178,9 +320,15 @@ pipeline {
         }
     }
 
+
+    // ================================================================
+    // POST BUILD EMAIL NOTIFICATIONS
+    // ================================================================
+
     post {
 
         failure {
+
             emailext(
                 body: '''${SCRIPT, template="groovy-html.template"}''',
                 subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - Failed",
@@ -190,6 +338,7 @@ pipeline {
         }
 
         success {
+
             emailext(
                 body: '''${SCRIPT, template="groovy-html.template"}''',
                 subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - Successful",
