@@ -37,7 +37,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 2. CHECKOUT CODE FROM GITHUB
         // ============================================================
@@ -50,7 +49,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 3. BUILD & TEST
         // ============================================================
@@ -60,7 +58,6 @@ pipeline {
                 sh "mvn clean test package"
             }
         }
-
 
         // ============================================================
         // 4. SONARQUBE ANALYSIS
@@ -76,7 +73,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 5. QUALITY GATE
         // ============================================================
@@ -88,7 +84,6 @@ pipeline {
                 }
             }
         }
-
 
         // ============================================================
         // 6. ARTIFACTORY CONFIGURATION
@@ -119,7 +114,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 7. DEPLOY MAVEN ARTIFACT
         // ============================================================
@@ -136,7 +130,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 8. PUBLISH BUILD INFO
         // ============================================================
@@ -148,7 +141,6 @@ pipeline {
                 )
             }
         }
-
 
         // ============================================================
         // 9. BUILD & PUSH DOCKER IMAGE
@@ -174,7 +166,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 10. TRIVY SECURITY SCAN
         // ============================================================
@@ -198,7 +189,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 11. CLEANUP LOCAL DOCKER IMAGES
         // ============================================================
@@ -213,7 +203,6 @@ pipeline {
             }
         }
 
-
         // ============================================================
         // 12. DEPLOY TO AMAZON EKS
         // ============================================================
@@ -221,20 +210,6 @@ pipeline {
         stage("Deploy to Kubernetes") {
             steps {
                 script {
-
-                    /*
-                     * Jenkins uses the AWS credential "aws-eks".
-                     *
-                     * AWS credentials
-                     *       ↓
-                     * AWS CLI
-                     *       ↓
-                     * EKS kubeconfig
-                     *       ↓
-                     * kubectl
-                     *       ↓
-                     * cicd-eks
-                     */
 
                     withAWS(
                         credentials: "aws-eks",
@@ -248,7 +223,7 @@ pipeline {
 
                             aws sts get-caller-identity
 
-                            echo
+                            echo ""
                             echo "======================================"
                             echo "UPDATING EKS KUBECONFIG"
                             echo "======================================"
@@ -257,7 +232,7 @@ pipeline {
                                 --region ap-south-2 \
                                 --name cicd-eks
 
-                            echo
+                            echo ""
                             echo "======================================"
                             echo "KUBERNETES NODES"
                             echo "======================================"
@@ -265,61 +240,37 @@ pipeline {
                             kubectl get nodes
                         """
 
-
                         dir("Kubernete") {
 
                             echo "Deploying Kubernetes Deployment..."
 
-                            sh """
-                                kubectl apply \
-                                -f regapp-deploy.yml
-                            """
-
+                            sh "kubectl apply -f regapp-deploy.yml"
 
                             echo "Deploying Kubernetes Service..."
 
-                            sh """
-                                kubectl apply \
-                                -f regapp-service.yml
-                            """
+                            sh "kubectl apply -f regapp-service.yml"
 
-
-                            echo "Restarting application deployment..."
-
-                            sh """
-                                kubectl rollout restart \
-                                deployment.apps/regapp-deployment
-                            """
-
-
-                            echo "Checking deployment..."
+                            echo "Checking deployment rollout..."
 
                             sh """
                                 kubectl rollout status \
-                                deployment.apps/registerapp-deployment \
+                                deployment.apps/regapp-deployment \
                                 --timeout=180s
                             """
 
-
                             echo "Checking pods..."
 
-                            sh """
-                                kubectl get pods -o wide
-                            """
-
+                            sh "kubectl get pods -o wide"
 
                             echo "Checking services..."
 
-                            sh """
-                                kubectl get services
-                            """
+                            sh "kubectl get services"
                         }
                     }
                 }
             }
         }
     }
-
 
     // ================================================================
     // POST BUILD EMAIL NOTIFICATIONS
