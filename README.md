@@ -112,19 +112,43 @@ This project helped me understand how the different parts of a DevOps pipeline w
 My work progressed through:
 
 **Jenkins setup**
-→ **GitHub integration**
-→ **Maven build & testing**
-→ **SonarQube & Quality Gate**
-→ **JFrog Artifactory**
-→ **Docker & Docker Hub**
-→ **Trivy scanning**
-→ **Terraform & AWS infrastructure**
-→ **Amazon EKS**
-→ **Kubernetes deployment**
-→ **AWS LoadBalancer**
-→ **Troubleshooting and deployment verification**
+→ GitHub integration
+→ Maven build & testing
+→ SonarQube & Quality Gate
+→ JFrog Artifactory
+→ Docker & Docker Hub
+→ Trivy scanning
+→ Terraform & AWS infrastructure
+→ Amazon EKS
+→ Kubernetes deployment
+→ AWS LoadBalancer
+→ Troubleshooting and deployment verification
 
 ## Project Screenshots
+
+### Jenkins Pipeline
+
+The complete CI/CD pipeline was executed successfully through Jenkins.
+
+![Jenkins Pipeline Success](screenshots/jenkins-pipeline-success.png)
+
+### Kubernetes Deployment
+
+The application is running with two replicas on Amazon EKS.
+
+![Kubernetes Pods](screenshots/kubernetes-pods.png)
+
+### AWS LoadBalancer
+
+The Kubernetes `LoadBalancer` service is exposed through AWS.
+
+![AWS LoadBalancer](screenshots/kubernetes-loadbalancer.png)
+
+### Application Deployment
+
+The application was successfully deployed and verified on AWS.
+
+![Project Deployment](screenshots/project-deployment.png)
 
 ### Jenkins Pipeline
 
