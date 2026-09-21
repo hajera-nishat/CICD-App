@@ -49,24 +49,24 @@ AWS LoadBalancer
 Java Web Application
 
 
-What the Jenkins Pipeline Does
+## What the Jenkins Pipeline Does
 
 The Jenkins pipeline automates the following steps:
 
-Checks out the application code from GitHub.
-Builds and tests the application using Maven.
-Runs SonarQube code analysis.
-Checks the SonarQube quality gate.
-Publishes the Maven artifact to JFrog Artifactory.
-Builds the Docker image.
-Pushes the image to Docker Hub.
-Scans the Docker image using Trivy.
-Connects Jenkins to the Amazon EKS cluster.
-Deploys the application using Kubernetes.
-Checks the Kubernetes deployment and running pods.
-Exposes the application through an AWS LoadBalancer.
+1. Checks out the application code from GitHub.
+2. Builds and tests the application using Maven.
+3. Runs SonarQube code analysis.
+4. Checks the SonarQube quality gate.
+5. Publishes the Maven artifact to JFrog Artifactory.
+6. Builds the Docker image.
+7. Pushes the Docker image to Docker Hub.
+8. Scans the Docker image using Trivy.
+9. Connects Jenkins to the Amazon EKS cluster.
+10. Deploys the application using Kubernetes.
+11. Checks the Kubernetes deployment and running pods.
+12. Exposes the application through an AWS LoadBalancer.
 
-Project Structure
+## Project Structure
 Automated-CICD-App/
 │
 ├── Kubernete/
@@ -93,7 +93,7 @@ Automated-CICD-App/
 ├── .gitignore
 └── README.md
 
-Kubernetes Deployment
+##Kubernetes Deployment
 
 The application is deployed on Amazon EKS using Kubernetes.
 
@@ -105,31 +105,58 @@ regapp-deployment
 
 The application is exposed using a Kubernetes LoadBalancer service, which creates an AWS LoadBalancer.
 
-What I Worked On
+## What I Worked On
 
 This project helped me understand how the different parts of a DevOps pipeline work together.
 
-During the project, I worked on:
+My work progressed through:
 
-Setting up and configuring Jenkins
-Connecting Jenkins with GitHub
-Building and testing the Java application with Maven
-Setting up SonarQube and a quality gate
-Configuring JFrog Artifactory
-Building and pushing Docker images
-Adding Trivy container scanning
-Setting up an Amazon EKS cluster
-Connecting Jenkins with AWS and EKS
-Deploying the application using Kubernetes
-Exposing the application through an AWS LoadBalancer
-Troubleshooting Jenkins, Docker, JFrog Artifactory and Kubernetes issues
-Security
+**Jenkins setup**
+→ **GitHub integration**
+→ **Maven build & testing**
+→ **SonarQube & Quality Gate**
+→ **JFrog Artifactory**
+→ **Docker & Docker Hub**
+→ **Trivy scanning**
+→ **Terraform & AWS infrastructure**
+→ **Amazon EKS**
+→ **Kubernetes deployment**
+→ **AWS LoadBalancer**
+→ **Troubleshooting and deployment verification**
+
+## Project Screenshots
+
+### Jenkins Pipeline
+
+The complete CI/CD pipeline was executed successfully through Jenkins.
+
+![Jenkins Pipeline Success](screenshots/jenkins-pipeline-success.png)
+
+### Kubernetes Deployment
+
+The application is running with two replicas on Amazon EKS.
+
+![Kubernetes Pods](screenshots/kubernetes-pods.png)
+
+### AWS LoadBalancer
+
+The Kubernetes `LoadBalancer` service is exposed through AWS.
+
+![AWS LoadBalancer](screenshots/kubernetes-loadbalancer.png)
+
+### Deployment
+
+The project was successfully deployed and verified on the AWS environment.
+
+![Project Deployment](screenshots/project-deployment.png)
+
+## Security
 
 Credentials are managed through Jenkins credentials instead of being stored directly in the Jenkinsfile.
 
 Sensitive files such as Terraform state files, environment files, private keys and tokens are excluded using .gitignore.
 
-Future Improvements
+## Future Improvements
 Add monitoring and logging
 Add HTTPS
 Add Kubernetes resource limits
@@ -137,7 +164,7 @@ Add automated rollback
 Use AWS Secrets Manager or Kubernetes Secrets
 Add separate development and production environments
 
-Author
+## Author
 
 Hajera Nishat
 
