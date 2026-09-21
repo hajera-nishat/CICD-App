@@ -50,7 +50,7 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    withSonarQubeEnv(credentialsId: 'Sonar-Qube-Token') {
+                    withSonarQubeEnv('SonarQube') {
                         sh "mvn sonar:sonar -Dsonar.host.url=${SONAR_HOST_URL}"
                     }
                 }
@@ -60,10 +60,7 @@ pipeline {
         stage("Quality Gate") {
             steps {
                 script {
-                    waitForQualityGate(
-                        abortPipeline: false,
-                        credentialsId: 'Sonar-Qube-Token'
-                    )
+                    waitForQualityGate(abortPipeline: false)
                 }
             }
         }
