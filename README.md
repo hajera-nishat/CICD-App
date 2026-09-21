@@ -142,35 +142,11 @@ The application is running with two replicas on Amazon EKS.
 
 The Kubernetes `LoadBalancer` service is exposed through AWS.
 
-![AWS LoadBalancer](screenshots/kubernetes-loadbalancer.png)
+![AWS LoadBalancer](screenshots/aws-loadbalancer.png)
 
 ### Application Deployment
 
 The application was successfully deployed and verified on AWS.
-
-![Project Deployment](screenshots/project-deployment.png)
-
-### Jenkins Pipeline
-
-The complete CI/CD pipeline was executed successfully through Jenkins.
-
-![Jenkins Pipeline Success](screenshots/jenkins-pipeline-success.png)
-
-### Kubernetes Deployment
-
-The application is running with two replicas on Amazon EKS.
-
-![Kubernetes Pods](screenshots/kubernetes-pods.png)
-
-### AWS LoadBalancer
-
-The Kubernetes `LoadBalancer` service is exposed through AWS.
-
-![AWS LoadBalancer](screenshots/kubernetes-loadbalancer.png)
-
-### Deployment
-
-The project was successfully deployed and verified on the AWS environment.
 
 ![Project Deployment](screenshots/project-deployment.png)
 
