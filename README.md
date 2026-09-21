@@ -154,18 +154,19 @@ The application was successfully deployed and verified on AWS.
 
 Credentials are managed through Jenkins credentials instead of being stored directly in the Jenkinsfile.
 
-Sensitive files such as Terraform state files, environment files, private keys and tokens are excluded using .gitignore.
+Sensitive files such as Terraform state files, environment files, private keys and tokens are excluded using `.gitignore`.
 
 ## Future Improvements
-Add monitoring and logging
-Add HTTPS
-Add Kubernetes resource limits
-Add automated rollback
-Use AWS Secrets Manager or Kubernetes Secrets
-Add separate development and production environments
+
+- Add monitoring and logging
+- Add HTTPS
+- Add Kubernetes resource limits
+- Add automated rollback
+- Use AWS Secrets Manager or Kubernetes Secrets
+- Add separate development and production environments
 
 ## Author
 
-Hajera Nishat
+**Hajera Nishat**
 
 GitHub: https://github.com/hajera-nishat
